@@ -11,19 +11,30 @@ import OrderSuccess from './pages/OrderSuccess';
 // Components
 import Navbar from './components/Navbar';
 
+// Admin Pages
+import AdminLayout from './layouts/AdminLayout';
+import Dashboard from './pages/admin/Dashboard';
+import ManageOrders from './pages/admin/ManageOrders';
+import ManageProducts from './pages/admin/ManageProducts';
+
 function App() {
   return (
     <CartProvider>
       <Router>
         <div className="app-container">
-          <Navbar />
-          <main className="container mt-4 mb-4">
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+              {/* Public Routes */}
+              <Route path="/" element={<><Navbar /><main className="container mt-4 mb-4"><Home /></main></>} />
+              <Route path="/checkout" element={<><Navbar /><main className="container mt-4 mb-4"><Checkout /></main></>} />
+              <Route path="/order-success/:orderId" element={<><Navbar /><main className="container mt-4 mb-4"><OrderSuccess /></main></>} />
+
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="orders" element={<ManageOrders />} />
+                <Route path="products" element={<ManageProducts />} />
+              </Route>
             </Routes>
-          </main>
         </div>
       </Router>
     </CartProvider>

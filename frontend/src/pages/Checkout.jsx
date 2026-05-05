@@ -10,8 +10,8 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     customerName: '',
-    customerPhone: '',
-    deliveryAddress: '',
+    paymentMethod: 'Online Payment (QRIS/Transfer)',
+    tableNumber: '',
   });
 
   const handleInputChange = (e) => {
@@ -23,10 +23,17 @@ const Checkout = () => {
     e.preventDefault();
     if (cart.length === 0) return;
 
+    if (!formData.tableNumber) {
+      alert('Mohon masukkan nomor meja Anda.');
+      return;
+    }
+
     setLoading(true);
     try {
       const orderData = {
-        ...formData,
+        customerName: formData.customerName,
+        customerPhone: formData.paymentMethod, 
+        deliveryAddress: `Meja ${formData.tableNumber}`,
         totalAmount: subtotal,
         items: cart.map(item => ({
           productId: item.productId,
@@ -37,11 +44,44 @@ const Checkout = () => {
       };
 
       const result = await apiCheckout(orderData);
-      clearCart();
-      navigate(`/order-success/${result.data.id}`);
+      
+      if (formData.paymentMethod === 'Online Payment (QRIS/Transfer)') {
+        // Handle simulation/mock token
+        if (result.data.snapToken === 'mock-snap-token-123') {
+          alert('Mode Simulasi: Pembayaran Berhasil!');
+          clearCart();
+          navigate(`/order-success/${result.data.id}`);
+          return;
+        }
+
+        // Open Midtrans Snap
+        window.snap.pay(result.data.snapToken, {
+          onSuccess: function(response) {
+            console.log('Payment success:', response);
+            clearCart();
+            navigate(`/order-success/${result.data.id}`);
+          },
+          onPending: function(response) {
+            console.log('Payment pending:', response);
+            clearCart();
+            navigate(`/order-success/${result.data.id}`);
+          },
+          onError: function(response) {
+            alert('Pembayaran gagal: ' + response.status_message);
+            setLoading(false);
+          },
+          onClose: function() {
+            alert('Anda menutup pembayaran sebelum selesai.');
+            setLoading(false);
+          }
+        });
+      } else {
+        // Tunai di Kasir
+        clearCart();
+        navigate(`/order-success/${result.data.id}`);
+      }
     } catch (err) {
       alert('Checkout gagal: ' + err.message);
-    } finally {
       setLoading(false);
     }
   };
@@ -61,7 +101,7 @@ const Checkout = () => {
 
   return (
     <div className="animate-fade">
-      <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '2rem' }}>Checkout</h1>
+      <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '2rem' }}>Checkout Pesanan</h1>
 
       <div style={styles.layout}>
         {/* Cart Summary */}
@@ -80,11 +120,11 @@ const Checkout = () => {
                   </p>
                   <div style={styles.itemMeta}>
                     <div style={styles.stepper}>
-                      <button onClick={() => updateQuantity(item.cartItemId, -1)} style={styles.stepBtn}>-</button>
+                      <button type="button" onClick={() => updateQuantity(item.cartItemId, -1)} style={styles.stepBtn}>-</button>
                       <span>{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.cartItemId, 1)} style={styles.stepBtn}>+</button>
+                      <button type="button" onClick={() => updateQuantity(item.cartItemId, 1)} style={styles.stepBtn}>+</button>
                     </div>
-                    <span style={{ fontWeight: 700 }}>Rp {(item.basePrice + item.selectedToppings.reduce((acc, t) => acc + t.price, 0)).toLocaleString()}</span>
+                    <span style={{ fontWeight: 700 }}>Rp {((item.basePrice + item.selectedToppings.reduce((acc, t) => acc + t.price, 0)) * item.quantity).toLocaleString()}</span>
                   </div>
                 </div>
                 <button onClick={() => removeFromCart(item.cartItemId)} style={styles.removeBtn}>
@@ -101,7 +141,7 @@ const Checkout = () => {
 
         {/* Checkout Form */}
         <form onSubmit={handleSubmit} style={styles.section}>
-          <h2 style={styles.sectionTitle}>Data Pengiriman</h2>
+          <h2 style={styles.sectionTitle}>Informasi Pelanggan (Dine-in)</h2>
           <div style={styles.formGroup}>
             <label style={styles.label}>Nama Lengkap</label>
             <input 
@@ -115,28 +155,34 @@ const Checkout = () => {
             />
           </div>
           <div style={styles.formGroup}>
-            <label style={styles.label}>No. WhatsApp</label>
+            <label style={styles.label}>Nomor Meja</label>
             <input 
-              type="tel" 
-              name="customerPhone"
+              type="number" 
+              name="tableNumber"
               required
-              value={formData.customerPhone}
+              value={formData.tableNumber}
               onChange={handleInputChange}
               style={styles.input}
-              placeholder="0812xxxxxx"
+              placeholder="Contoh: 5"
             />
           </div>
           <div style={styles.formGroup}>
-            <label style={styles.label}>Alamat Lengkap</label>
-            <textarea 
-              name="deliveryAddress"
+            <label style={styles.label}>Metode Pembayaran</label>
+            <select 
+              name="paymentMethod"
               required
-              rows="3"
-              value={formData.deliveryAddress}
+              value={formData.paymentMethod}
               onChange={handleInputChange}
               style={styles.input}
-              placeholder="Jl. Mawar No. 123..."
-            />
+            >
+              <option value="Online Payment (QRIS/Transfer)">Online Payment (QRIS/Transfer)</option>
+              <option value="Tunai di Kasir">Tunai di Kasir</option>
+            </select>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              {formData.paymentMethod === 'Online Payment (QRIS/Transfer)' 
+                ? '* Anda akan diarahkan ke gerbang pembayaran aman.' 
+                : '* Silakan lakukan pembayaran ke kasir setelah memesan.'}
+            </p>
           </div>
 
           <button 
@@ -144,7 +190,7 @@ const Checkout = () => {
             disabled={loading}
             style={{ ...styles.submitBtn, opacity: loading ? 0.7 : 1 }}
           >
-            {loading ? <Loader2 className="animate-spin" /> : <>Buat Pesanan <ArrowRight size={20} /></>}
+            {loading ? <Loader2 className="animate-spin" /> : <>Pesan Sekarang <ArrowRight size={20} /></>}
           </button>
         </form>
       </div>

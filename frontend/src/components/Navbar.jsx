@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Flame } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
@@ -10,8 +10,7 @@ const Navbar = () => {
     <nav style={styles.nav}>
       <div className="container flex justify-between items-center" style={{ height: '100%' }}>
         <Link to="/" style={styles.logo}>
-          <Flame size={24} color="var(--primary)" fill="var(--primary)" />
-          <span style={{ fontWeight: 800 }}>MIE AYAM <span style={{ color: 'var(--primary)' }}>CHILI OIL</span></span>
+          <img src="/banner.png" alt="Menu Kedai Mie Ayam Chili Oil" style={styles.bannerImg} />
         </Link>
         
         <Link to="/checkout" style={styles.cartContainer}>
@@ -27,26 +26,27 @@ const Navbar = () => {
 
 const styles = {
   nav: {
-    height: '64px',
-    backgroundColor: '#fff',
-    borderBottom: '1px solid var(--border)',
+    backgroundColor: '#1a1a1a',
     position: 'sticky',
     top: 0,
     zIndex: 100,
-    boxShadow: 'var(--shadow)',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
+    overflow: 'hidden',
   },
   logo: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    fontSize: '1.25rem',
     textDecoration: 'none',
-    color: 'var(--text-main)',
+    height: '100%',
+  },
+  bannerImg: {
+    height: '60px',
+    objectFit: 'contain',
   },
   cartContainer: {
     position: 'relative',
     padding: '8px',
-    color: 'var(--text-main)',
+    color: '#fff',
   },
   badge: {
     position: 'absolute',

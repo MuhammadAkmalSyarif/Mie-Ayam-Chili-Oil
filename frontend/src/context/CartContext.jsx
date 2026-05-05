@@ -22,7 +22,10 @@ export const CartProvider = ({ children }) => {
       
       if (existingItemIndex > -1) {
         const newCart = [...prevCart];
-        newCart[existingItemIndex].quantity += quantity;
+        newCart[existingItemIndex] = {
+          ...newCart[existingItemIndex],
+          quantity: newCart[existingItemIndex].quantity + quantity
+        };
         return newCart;
       } else {
         return [...prevCart, { 
