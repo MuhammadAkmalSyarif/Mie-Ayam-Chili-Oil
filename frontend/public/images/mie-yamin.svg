@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <radialGradient id="plate" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="85%" style="stop-color:#f0f0f0"/>
+      <stop offset="100%" style="stop-color:#d0d0d0"/>
+    </radialGradient>
+    <radialGradient id="bg" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:#deb887"/>
+      <stop offset="100%" style="stop-color:#a0784c"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)" rx="20"/>
+  <ellipse cx="200" cy="200" rx="170" ry="170" fill="url(#plate)" stroke="#c0c0c0" stroke-width="2"/>
+  <ellipse cx="200" cy="200" rx="155" ry="155" fill="none" stroke="#e8e8e8" stroke-width="1"/>
+  <!-- Yamin noodles - dark brown/sweet soy sauce color -->
+  <g transform="translate(200,190)">
+    <path d="M-80,0 Q-40,-30 0,-10 Q40,10 80,0" fill="none" stroke="#5c3317" stroke-width="5" opacity="0.9"/>
+    <path d="M-70,10 Q-30,-20 10,0 Q50,20 90,10" fill="none" stroke="#6b3f1f" stroke-width="4" opacity="0.85"/>
+    <path d="M-90,20 Q-50,-10 -10,10 Q30,30 70,20" fill="none" stroke="#4a2510" stroke-width="5" opacity="0.9"/>
+    <path d="M-60,-15 Q-20,-45 20,-25 Q60,-5 80,-15" fill="none" stroke="#6b3f1f" stroke-width="4" opacity="0.8"/>
+    <path d="M-75,30 Q-35,0 5,20 Q45,40 85,30" fill="none" stroke="#5c3317" stroke-width="5" opacity="0.85"/>
+    <path d="M-85,-5 Q-45,-35 -5,-15 Q35,5 75,-5" fill="none" stroke="#4a2510" stroke-width="4" opacity="0.75"/>
+  </g>
+  <!-- Chicken topping -->
+  <ellipse cx="200" cy="175" rx="35" ry="25" fill="#8B6914" opacity="0.85"/>
+  <circle cx="190" cy="170" r="5" fill="#6B4914" opacity="0.6"/>
+  <circle cx="205" cy="178" r="4" fill="#7B5914" opacity="0.5"/>
+  <!-- Scallions -->
+  <circle cx="195" cy="165" r="3" fill="#2d8c2d"/>
+  <circle cx="208" cy="173" r="2.5" fill="#3a9c3a"/>
+  <!-- Bok choy -->
+  <g transform="translate(275,175) rotate(15)">
+    <ellipse rx="15" ry="25" fill="#4a9c4a" opacity="0.8"/>
+    <ellipse rx="8" ry="18" fill="#90c090" opacity="0.6"/>
+  </g>
+  <!-- Sweet soy sauce glaze -->
+  <circle cx="170" cy="210" r="4" fill="#3a1f0d" opacity="0.3"/>
+  <circle cx="230" cy="205" r="3.5" fill="#3a1f0d" opacity="0.25"/>
+  <circle cx="185" cy="230" r="3" fill="#3a1f0d" opacity="0.2"/>
+  <!-- Label -->
+  <rect x="80" y="340" width="240" height="40" rx="8" fill="rgba(0,0,0,0.65)"/>
+  <text x="200" y="366" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="16" fill="white">Mie Ayam Yamin</text>
+</svg>

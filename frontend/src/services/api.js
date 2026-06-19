@@ -1,4 +1,17 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = `http://${window.location.hostname}:5000/api`;
+
+export const fixImageUrl = (url) => {
+  if (!url) return url;
+  return url.replace('localhost', window.location.hostname);
+};
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('adminToken');
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  };
+};
 
 export const fetchProducts = async () => {
   const response = await fetch(`${API_URL}/products`);
@@ -23,7 +36,9 @@ export const checkout = async (orderData) => {
 };
 
 export const fetchOrderById = async (id) => {
-  const response = await fetch(`${API_URL}/orders/${id}`);
+  const response = await fetch(`${API_URL}/orders/${id}`, {
+    headers: getAuthHeaders()
+  });
   if (!response.ok) throw new Error('Failed to fetch order');
   return response.json();
 };
@@ -31,7 +46,9 @@ export const fetchOrderById = async (id) => {
 // Admin Endpoints
 
 export const fetchOrders = async () => {
-  const response = await fetch(`${API_URL}/orders`);
+  const response = await fetch(`${API_URL}/orders`, {
+    headers: getAuthHeaders()
+  });
   if (!response.ok) throw new Error('Failed to fetch orders');
   return response.json();
 };
@@ -39,7 +56,7 @@ export const fetchOrders = async () => {
 export const updateOrderStatus = async (id, status) => {
   const response = await fetch(`${API_URL}/orders/${id}/status`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify({ status }),
   });
   if (!response.ok) throw new Error('Failed to update order status');
@@ -49,7 +66,7 @@ export const updateOrderStatus = async (id, status) => {
 export const createProduct = async (productData) => {
   const response = await fetch(`${API_URL}/products`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify(productData),
   });
   if (!response.ok) throw new Error('Failed to create product');
@@ -59,7 +76,7 @@ export const createProduct = async (productData) => {
 export const updateProduct = async (id, productData) => {
   const response = await fetch(`${API_URL}/products/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify(productData),
   });
   if (!response.ok) throw new Error('Failed to update product');
@@ -69,6 +86,7 @@ export const updateProduct = async (id, productData) => {
 export const deleteProduct = async (id) => {
   const response = await fetch(`${API_URL}/products/${id}`, {
     method: 'DELETE',
+    headers: getAuthHeaders()
   });
   if (!response.ok) throw new Error('Failed to delete product');
   return response.json();
@@ -77,7 +95,22 @@ export const deleteProduct = async (id) => {
 export const deleteAllOrders = async () => {
   const response = await fetch(`${API_URL}/orders`, {
     method: 'DELETE',
+    headers: getAuthHeaders()
   });
   if (!response.ok) throw new Error('Failed to delete orders');
   return response.json();
 };
+
+export const login = async (username, password) => {
+  const response = await fetch(`${API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Login failed');
+  }
+  return response.json();
+};
+
