@@ -1,0 +1,13 @@
+node_modules/
+.env
+dev.db
+backend/uploads/
+.DS_Store
+
+# Vite output
+dist/
+dist-ssr/
+
+# IDE files
+.vscode/
+.idea/
