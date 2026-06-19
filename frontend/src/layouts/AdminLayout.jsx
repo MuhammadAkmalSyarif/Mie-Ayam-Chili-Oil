@@ -1,70 +1,52 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, UtensilsCrossed, LogOut } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Utensils, LogOut } from 'lucide-react';
 
-const AdminLayout = ({ onLogout }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+const AdminLayout = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard size={20} /> },
-    { name: 'Pesanan', path: '/admin/orders', icon: <ShoppingBag size={20} /> },
-    { name: 'Menu', path: '/admin/products', icon: <UtensilsCrossed size={20} /> },
+    { path: '/admin', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
+    { path: '/admin/orders', icon: <ShoppingBag size={20} />, label: 'Pesanan' },
+    { path: '/admin/products', icon: <Utensils size={20} />, label: 'Menu' },
   ];
 
   return (
-    <div style={styles.layout}>
+    <div style={styles.container}>
       {/* Sidebar */}
-      <aside style={{ ...styles.sidebar, width: isSidebarOpen ? '280px' : '80px' }}>
-        <div style={styles.sidebarHeader}>
-          <h2 
-            style={{ ...styles.logo, display: isSidebarOpen ? 'block' : 'none', cursor: 'pointer' }}
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            MIE AYAM <span style={{ color: 'var(--primary)' }}>ADMIN</span>
+      <aside style={styles.sidebar}>
+        <div style={styles.logo}>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', color: 'var(--primary)' }}>
+            MIE AYAM ADMIN
           </h2>
-          <div 
-            style={{ ...styles.logoSmall, display: isSidebarOpen ? 'none' : 'flex', cursor: 'pointer' }}
-            onClick={() => setIsSidebarOpen(true)}
-          >
-            M
-          </div>
         </div>
-
+        
         <nav style={styles.nav}>
           {menuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
+            <Link 
+              key={item.path} 
+              to={item.path} 
               style={{
                 ...styles.navItem,
-                backgroundColor: location.pathname === item.path ? 'rgba(220, 38, 38, 0.1)' : 'transparent',
-                color: location.pathname === item.path ? 'var(--primary)' : 'var(--text-muted)',
-                justifyContent: isSidebarOpen ? 'flex-start' : 'center',
+                ...(location.pathname === item.path ? styles.activeNavItem : {})
               }}
             >
               {item.icon}
-              {isSidebarOpen && <span style={{ marginLeft: '12px', fontWeight: '500' }}>{item.name}</span>}
+              {item.label}
             </Link>
           ))}
         </nav>
 
-        <div style={styles.sidebarFooter}>
-          <button 
-            onClick={onLogout}
-            style={{
-              ...styles.logoutBtn,
-              justifyContent: isSidebarOpen ? 'flex-start' : 'center',
-            }}
-          >
+        <div style={styles.logout}>
+          <Link to="/" style={styles.navItem}>
             <LogOut size={20} />
-            {isSidebarOpen && <span style={{ marginLeft: '12px' }}>Keluar</span>}
-          </button>
+            Ke Toko (Pembeli)
+          </Link>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main style={{ ...styles.main, marginLeft: isSidebarOpen ? '280px' : '80px' }}>
+      <main style={styles.main}>
         <div style={styles.content}>
           <Outlet />
         </div>
@@ -74,88 +56,59 @@ const AdminLayout = ({ onLogout }) => {
 };
 
 const styles = {
-  layout: {
+  container: {
     display: 'flex',
     minHeight: '100vh',
     backgroundColor: 'var(--bg-main)',
   },
   sidebar: {
-    backgroundColor: '#0F172A',
-    borderRight: '1px solid #1E293B',
+    width: '250px',
+    backgroundColor: '#1a1a1a',
+    color: '#fff',
     display: 'flex',
     flexDirection: 'column',
-    transition: 'width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
     position: 'fixed',
     height: '100vh',
-    zIndex: 50,
-  },
-  sidebarHeader: {
-    padding: '2rem 1.5rem',
-    borderBottom: '1px solid #1E293B',
-    marginBottom: '1rem',
   },
   logo: {
-    fontSize: '1.25rem',
-    fontWeight: '800',
-    margin: 0,
-    color: '#F8FAFC',
-    letterSpacing: '1px',
-  },
-  logoSmall: {
-    fontSize: '1.5rem',
-    fontWeight: '800',
-    justifyContent: 'center',
-    color: 'var(--primary)',
+    padding: '1.5rem',
+    borderBottom: '1px solid #333',
   },
   nav: {
+    padding: '1rem 0',
     flex: 1,
-    padding: '0 1rem',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.25rem',
   },
   navItem: {
     display: 'flex',
     alignItems: 'center',
-    padding: '0.875rem 1rem',
-    borderRadius: '12px',
+    gap: '12px',
+    padding: '1rem 1.5rem',
+    color: '#ccc',
     textDecoration: 'none',
     transition: 'all 0.2s ease',
   },
-  sidebarFooter: {
-    padding: '1.5rem',
-    borderTop: '1px solid #1E293B',
+  activeNavItem: {
+    backgroundColor: 'var(--primary)',
+    color: '#fff',
+    borderLeft: '4px solid #fff',
   },
-  logoutBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-    padding: '0.875rem 1rem',
-    borderRadius: '12px',
-    border: 'none',
-    background: 'rgba(239, 68, 68, 0.1)',
-    cursor: 'pointer',
-    color: '#F87171',
-    fontWeight: '600',
-    transition: 'all 0.2s ease',
+  logout: {
+    padding: '1rem 0',
+    borderTop: '1px solid #333',
   },
   main: {
     flex: 1,
-    transition: 'margin-left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
+    marginLeft: '250px',
     padding: '2rem',
-    display: 'flex',
-    flexDirection: 'column',
   },
   content: {
-    maxWidth: '1400px',
+    maxWidth: '1000px',
     margin: '0 auto',
-    width: '100%',
     backgroundColor: '#fff',
-    borderRadius: 'var(--radius-lg)',
-    boxShadow: 'var(--shadow-md)',
-    padding: '2.5rem',
-    minHeight: '85vh',
-    border: '1px solid var(--border-light)',
+    borderRadius: '12px',
+    boxShadow: 'var(--shadow)',
+    padding: '2rem',
+    minHeight: '80vh',
   }
 };
 

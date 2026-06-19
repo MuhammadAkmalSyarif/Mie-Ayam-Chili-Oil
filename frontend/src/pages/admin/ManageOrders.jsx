@@ -34,26 +34,15 @@ const ManageOrders = () => {
     }
   };
 
-  const [isClearing, setIsClearing] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-
   const handleClearHistory = async () => {
-    if (!showConfirm) {
-      setShowConfirm(true);
-      setTimeout(() => setShowConfirm(false), 3000);
-      return;
-    }
-
-    setIsClearing(true);
+    if (!window.confirm('Apakah Anda yakin ingin menghapus semua riwayat pesanan? Tindakan ini tidak bisa dibatalkan.')) return;
+    
     try {
       await deleteAllOrders();
       setOrders([]);
-      setShowConfirm(false);
       alert('Riwayat pesanan berhasil dibersihkan!');
     } catch (error) {
       alert('Gagal menghapus riwayat: ' + error.message);
-    } finally {
-      setIsClearing(false);
     }
   };
 
@@ -64,17 +53,8 @@ const ManageOrders = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Pesanan Masuk</h1>
         {orders.length > 0 && (
-          <button 
-            onClick={handleClearHistory} 
-            style={{
-              ...styles.clearBtn,
-              backgroundColor: showConfirm ? '#d32f2f' : '#fff',
-              color: showConfirm ? '#fff' : '#d32f2f',
-              borderColor: '#d32f2f'
-            }}
-            disabled={isClearing}
-          >
-            {isClearing ? <Loader2 className="animate-spin" size={16} /> : (showConfirm ? 'Yakin Bersihkan?' : <><Trash2 size={16} /> Bersihkan History</>)}
+          <button onClick={handleClearHistory} style={styles.clearBtn}>
+            <Trash2 size={16} /> Bersihkan History
           </button>
         )}
       </div>
@@ -155,67 +135,56 @@ const styles = {
   tableWrapper: {
     overflowX: 'auto',
     backgroundColor: '#fff',
-    borderRadius: 'var(--radius-lg)',
-    border: '1px solid var(--border-light)',
-    boxShadow: 'var(--shadow-sm)',
+    borderRadius: '8px',
+    border: '1px solid var(--border)',
   },
   table: {
     width: '100%',
     borderCollapse: 'collapse',
   },
   th: {
-    padding: '1.25rem 1.5rem',
+    padding: '1rem',
     textAlign: 'left',
     backgroundColor: 'var(--bg-main)',
-    borderBottom: '1px solid var(--border-light)',
+    borderBottom: '2px solid var(--border)',
     color: 'var(--text-muted)',
-    fontWeight: '700',
-    fontSize: '0.85rem',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
+    fontWeight: '600',
   },
   tr: {
-    borderBottom: '1px solid var(--border-light)',
-    transition: 'background-color 0.2s',
+    borderBottom: '1px solid var(--border)',
   },
   td: {
-    padding: '1.25rem 1.5rem',
+    padding: '1rem',
     verticalAlign: 'top',
-    color: 'var(--text-main)',
   },
   badge: {
-    padding: '6px 12px',
-    borderRadius: 'var(--radius-full)',
+    padding: '4px 8px',
+    borderRadius: '12px',
     fontSize: '0.75rem',
-    fontWeight: '800',
-    letterSpacing: '0.05em',
+    fontWeight: 'bold',
   },
   actionBtn: {
-    display: 'inline-flex',
+    display: 'flex',
     alignItems: 'center',
-    gap: '6px',
-    padding: '8px 14px',
-    backgroundColor: 'var(--success)',
+    gap: '4px',
+    padding: '6px 12px',
+    backgroundColor: '#4caf50',
     color: '#fff',
-    borderRadius: 'var(--radius-full)',
-    fontWeight: '700',
-    fontSize: '0.85rem',
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
+    borderRadius: '4px',
+    fontWeight: '600',
+    fontSize: '0.875rem',
   },
   clearBtn: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    padding: '0.75rem 1.25rem',
+    gap: '6px',
+    padding: '0.6rem 1.2rem',
     backgroundColor: '#fff',
-    color: 'var(--error)',
-    border: '2px solid var(--error)',
-    borderRadius: 'var(--radius-sm)',
-    fontWeight: '700',
-    fontSize: '0.9rem',
+    color: '#d32f2f',
+    border: '1px solid #d32f2f',
+    borderRadius: '8px',
+    fontWeight: '600',
+    fontSize: '0.875rem',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
   }

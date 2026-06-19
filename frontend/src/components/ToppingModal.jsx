@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
-import { fixImageUrl } from '../services/api';
 
 const ToppingModal = ({ product, toppings, onClose, onAdd }) => {
   const [quantity, setQuantity] = useState(1);
@@ -29,7 +28,7 @@ const ToppingModal = ({ product, toppings, onClose, onAdd }) => {
         <div style={styles.body}>
           {/* Product Info */}
           <div style={styles.productInfo}>
-            <img src={fixImageUrl(product.imageUrl)} alt={product.name} style={styles.thumb} />
+            <img src={product.imageUrl} alt={product.name} style={styles.thumb} />
             <div>
               <h3 style={{ fontWeight: 700 }}>{product.name}</h3>
               <p style={{ color: 'var(--primary)', fontWeight: 800 }}>Rp {product.basePrice.toLocaleString()}</p>
@@ -121,9 +120,9 @@ const styles = {
   modal: {
     backgroundColor: '#fff',
     width: '100%',
-    maxWidth: '400px', // Slightly narrower
-    borderRadius: '20px', 
-    padding: '1.25rem', // Tighter padding
+    maxWidth: '450px', // Fixed width for desktop
+    borderRadius: '24px', // Rounded all around
+    padding: '1.5rem',
     maxHeight: '90vh',
     overflowY: 'auto',
     boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
@@ -132,41 +131,41 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '0.75rem',
+    marginBottom: '1rem',
   },
   title: { fontSize: '1.125rem', fontWeight: 800 },
   closeBtn: { background: 'none', color: 'var(--text-muted)', padding: '4px' },
-  body: { display: 'flex', flexDirection: 'column', gap: '0.5rem' }, // Tighter gap
-  productInfo: { display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '0.25rem' },
+  body: { display: 'flex', flexDirection: 'column', gap: '1rem' },
+  productInfo: { display: 'flex', gap: '0.75rem', alignItems: 'center' },
   thumb: { width: '48px', height: '48px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0 },
   section: {},
-  sectionTitle: { fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.25rem', color: 'var(--text-main)' },
+  sectionTitle: { fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-main)' },
   toppingItem: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '0.4rem 0.5rem', // Tighter padding
-    borderBottom: '1px solid rgba(0,0,0,0.05)',
+    padding: '0.6rem 0.5rem',
+    borderBottom: '1px solid var(--border)',
     cursor: 'pointer',
-    borderRadius: '6px',
+    borderRadius: '8px',
     transition: 'background-color 0.15s ease',
   },
   checkbox: { width: '16px', height: '16px', accentColor: 'var(--primary)', cursor: 'pointer', flexShrink: 0 },
-  quantitySection: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' },
+  quantitySection: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   stepper: {
     display: 'flex', alignItems: 'center', gap: '0.5rem',
-    backgroundColor: '#f5f5f5', padding: '0.25rem 0.5rem', borderRadius: '10px'
+    backgroundColor: '#f5f5f5', padding: '0.3rem 0.5rem', borderRadius: '12px'
   },
   stepBtn: {
-    backgroundColor: '#fff', width: '28px', height: '28px', borderRadius: '6px',
+    backgroundColor: '#fff', width: '30px', height: '30px', borderRadius: '8px',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     boxShadow: 'var(--shadow)', transition: 'opacity 0.2s',
   },
-  footer: { marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1px solid var(--border)', paddingTop: '0.75rem' },
+  footer: { marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' },
   totalInfo: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   submitBtn: {
     width: '100%', backgroundColor: 'var(--primary)', color: '#fff',
-    padding: '0.75rem', borderRadius: '10px', fontWeight: 700, fontSize: '1rem',
+    padding: '0.875rem', borderRadius: '12px', fontWeight: 700, fontSize: '1rem',
     transition: 'background-color 0.2s ease',
   },
 };

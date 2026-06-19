@@ -58,7 +58,7 @@ export const CartProvider = ({ children }) => {
   const clearCart = () => setCart([]);
 
   const subtotal = cart.reduce((total, item) => {
-    const itemToppingsTotal = (item.selectedToppings || []).reduce((t, topping) => t + topping.price, 0);
+    const itemToppingsTotal = item.selectedToppings.reduce((t, topping) => t + topping.price, 0);
     return total + (item.basePrice + itemToppingsTotal) * item.quantity;
   }, 0);
 

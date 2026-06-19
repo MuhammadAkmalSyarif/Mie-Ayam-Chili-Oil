@@ -31,26 +31,15 @@ const Dashboard = () => {
     loadStats();
   }, []);
 
-  const [isResetting, setIsResetting] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-
   const handleReset = async () => {
-    if (!showConfirm) {
-      setShowConfirm(true);
-      setTimeout(() => setShowConfirm(false), 3000);
-      return;
-    }
+    if (!window.confirm('Apakah Anda yakin ingin mereset semua data pesanan dan pendapatan? Tindakan ini tidak bisa dibatalkan.')) return;
     
-    setIsResetting(true);
     try {
       await deleteAllOrders();
       setStats({ totalOrders: 0, pendingOrders: 0, revenue: 0 });
-      setShowConfirm(false);
       alert('Data berhasil direset!');
     } catch (error) {
       alert('Gagal mereset data: ' + error.message);
-    } finally {
-      setIsResetting(false);
     }
   };
 
@@ -60,16 +49,8 @@ const Dashboard = () => {
     <div className="animate-fade">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Ringkasan Hari Ini</h1>
-        <button 
-          onClick={handleReset} 
-          style={{
-            ...styles.resetBtn,
-            backgroundColor: showConfirm ? 'var(--primary)' : '#fff',
-            color: showConfirm ? '#fff' : 'var(--primary)',
-          }}
-          disabled={isResetting}
-        >
-          {isResetting ? <Loader2 className="animate-spin" size={16} /> : (showConfirm ? 'Yakin Hapus Semua?' : <><RotateCcw size={16} /> Reset Data</>)}
+        <button onClick={handleReset} style={styles.resetBtn}>
+          <RotateCcw size={16} /> Reset Data
         </button>
       </div>
       
@@ -105,55 +86,45 @@ const Dashboard = () => {
 const styles = {
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '2rem',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '1.5rem',
   },
   card: {
     backgroundColor: '#fff',
-    padding: '2rem',
-    borderRadius: 'var(--radius-lg)',
-    border: '1px solid var(--border-light)',
+    padding: '1.5rem',
+    borderRadius: '12px',
+    border: '1px solid var(--border)',
     display: 'flex',
     alignItems: 'center',
     gap: '1.5rem',
-    boxShadow: 'var(--shadow-sm)',
-    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-    cursor: 'default',
   },
   iconWrapper: {
-    padding: '1.25rem',
+    padding: '1rem',
     backgroundColor: 'var(--bg-main)',
-    borderRadius: 'var(--radius-md)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
+    borderRadius: '50%',
   },
   label: {
     color: 'var(--text-muted)',
-    fontSize: '0.95rem',
+    fontSize: '0.875rem',
     marginBottom: '0.25rem',
-    fontWeight: '500',
   },
   value: {
-    fontSize: '1.75rem',
-    fontWeight: '800',
-    color: 'var(--text-main)',
-    letterSpacing: '-0.02em',
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
   },
   resetBtn: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    padding: '0.75rem 1.25rem',
+    gap: '6px',
+    padding: '0.6rem 1.2rem',
     backgroundColor: '#fff',
     color: 'var(--primary)',
-    border: '2px solid var(--primary)',
-    borderRadius: 'var(--radius-sm)',
-    fontWeight: '700',
-    fontSize: '0.9rem',
+    border: '1px solid var(--primary)',
+    borderRadius: '8px',
+    fontWeight: '600',
+    fontSize: '0.875rem',
     cursor: 'pointer',
-    transition: 'all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)',
+    transition: 'all 0.2s ease',
   },
 };
 
