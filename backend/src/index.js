@@ -1,4 +1,27 @@
 require('dotenv').config();
+
+// SQLite Vercel Serverless workaround
+const fs = require('fs');
+const path = require('path');
+const tempDbPath = '/tmp/dev.db';
+const bundledDbPath = path.join(__dirname, '../dev.db');
+
+if (process.env.NODE_ENV === 'production') {
+  if (!fs.existsSync(tempDbPath)) {
+    try {
+      if (fs.existsSync(bundledDbPath)) {
+        fs.copyFileSync(bundledDbPath, tempDbPath);
+        console.log('Database successfully copied to /tmp');
+      } else {
+        console.error('Bundled database not found at:', bundledDbPath);
+      }
+    } catch (err) {
+      console.error('Failed to copy database to /tmp:', err);
+    }
+  }
+  process.env.DATABASE_URL = `file:${tempDbPath}`;
+}
+
 const express = require('express');
 const cors = require('cors');
 const productRoutes = require('./routes/productRoutes');
