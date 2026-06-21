@@ -13,7 +13,9 @@ app.use(express.json());
 
 // Routes
 app.use('/api/products', productRoutes);
+app.use('/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/orders', orderRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
