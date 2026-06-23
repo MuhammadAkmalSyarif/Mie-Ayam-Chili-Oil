@@ -1,9 +1,22 @@
 import React from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, ShoppingBag, Utensils, LogOut } from 'lucide-react';
 
 const AdminLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Client-side authentication guard
+  const isAuthenticated = localStorage.getItem('admin-token') === 'authenticated-session-token';
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin-token');
+    navigate('/admin/login');
+  };
 
   const menuItems = [
     { path: '/admin', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
@@ -16,32 +29,33 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <aside style={styles.sidebar}>
         <div style={styles.logo}>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', color: 'var(--primary)' }}>
-            MIE AYAM ADMIN
-          </h2>
+          <img src="/banner.png" alt="Mie Ayam Bang Ade" style={styles.logoImg} />
         </div>
         
         <nav style={styles.nav}>
-          {menuItems.map((item) => (
-            <Link 
-              key={item.path} 
-              to={item.path} 
-              style={{
-                ...styles.navItem,
-                ...(location.pathname === item.path ? styles.activeNavItem : {})
-              }}
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link 
+                key={item.path} 
+                to={item.path} 
+                style={{
+                  ...styles.navItem,
+                  ...(isActive ? styles.activeNavItem : {})
+                }}
+              >
+                <span style={isActive ? styles.activeIcon : styles.inactiveIcon}>{item.icon}</span>
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div style={styles.logout}>
-          <Link to="/" style={styles.navItem}>
+          <button onClick={handleLogout} style={styles.logoutBtn}>
             <LogOut size={20} />
-            Ke Toko (Pembeli)
-          </Link>
+            Keluar
+          </button>
         </div>
       </aside>
 
@@ -59,57 +73,88 @@ const styles = {
   container: {
     display: 'flex',
     minHeight: '100vh',
-    backgroundColor: 'var(--bg-main)',
+    backgroundColor: '#fafafa', // Light layout background
   },
   sidebar: {
     width: '250px',
-    backgroundColor: '#1a1a1a',
-    color: '#fff',
+    backgroundColor: '#ffffff', // Pure white background
+    borderRight: '1px solid var(--border, #eaeaea)',
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
     height: '100vh',
+    zIndex: 50,
   },
   logo: {
     padding: '1.5rem',
-    borderBottom: '1px solid #333',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottom: '1px solid var(--border, #eaeaea)',
+  },
+  logoImg: {
+    height: '50px',
+    objectFit: 'contain',
   },
   nav: {
-    padding: '1rem 0',
+    padding: '1rem 0.75rem',
     flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.25rem',
   },
   navItem: {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    padding: '1rem 1.5rem',
-    color: '#ccc',
+    padding: '0.875rem 1rem',
+    color: '#4f4f4f', // Dark gray text
     textDecoration: 'none',
+    fontWeight: '600',
+    borderRadius: '12px',
     transition: 'all 0.2s ease',
   },
   activeNavItem: {
-    backgroundColor: 'var(--primary)',
-    color: '#fff',
-    borderLeft: '4px solid #fff',
+    backgroundColor: 'rgba(255, 59, 48, 0.08)', // Light pinkish red highlight
+    color: 'var(--primary, #ff3b30)', // Red primary text
+  },
+  activeIcon: {
+    color: 'var(--primary, #ff3b30)',
+  },
+  inactiveIcon: {
+    color: '#86868b',
   },
   logout: {
-    padding: '1rem 0',
-    borderTop: '1px solid #333',
+    padding: '1rem 0.75rem',
+    borderTop: '1px solid var(--border, #eaeaea)',
+  },
+  logoutBtn: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '0.875rem 1rem',
+    color: '#ff3b30', // Red for logout
+    backgroundColor: 'transparent',
+    border: 'none',
+    fontWeight: '600',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    textAlign: 'left',
+    transition: 'all 0.2s ease',
   },
   main: {
     flex: 1,
     marginLeft: '250px',
-    padding: '2rem',
+    backgroundColor: '#fafafa',
   },
   content: {
     maxWidth: '1000px',
     margin: '0 auto',
-    backgroundColor: '#fff',
-    borderRadius: '12px',
-    boxShadow: 'var(--shadow)',
     padding: '2rem',
-    minHeight: '80vh',
+    minHeight: '100vh',
   }
 };
 
 export default AdminLayout;
+

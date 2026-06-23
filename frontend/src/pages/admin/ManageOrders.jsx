@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchOrders, updateOrderStatus, deleteAllOrders } from '../../services/api';
-import { Loader2, CheckCircle, Trash2 } from 'lucide-react';
+import { Loader2, CheckCircle, Trash2, Calendar, User, MapPin, ClipboardList } from 'lucide-react';
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -46,12 +46,16 @@ const ManageOrders = () => {
     }
   };
 
-  if (loading && orders.length === 0) return <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}><Loader2 className="animate-spin" /></div>;
+  if (loading && orders.length === 0) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+      <Loader2 className="animate-spin" size={40} color="var(--primary)" />
+    </div>
+  );
 
   return (
     <div className="animate-fade">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Pesanan Masuk</h1>
+      <div style={styles.header}>
+        <h1 style={styles.title}>Pesanan Masuk</h1>
         {orders.length > 0 && (
           <button onClick={handleClearHistory} style={styles.clearBtn}>
             <Trash2 size={16} /> Bersihkan History
@@ -60,7 +64,10 @@ const ManageOrders = () => {
       </div>
       
       {orders.length === 0 ? (
-        <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Belum ada pesanan.</p>
+        <div style={styles.emptyState}>
+          <ClipboardList size={48} color="var(--text-muted)" style={{ marginBottom: '1rem' }} />
+          <p style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Belum ada pesanan masuk hari ini.</p>
+        </div>
       ) : (
         <div style={styles.tableWrapper}>
           <table style={styles.table}>
@@ -77,48 +84,85 @@ const ManageOrders = () => {
             <tbody>
               {orders.map(order => (
                 <tr key={order.id} style={styles.tr}>
+                  {/* Time */}
                   <td style={styles.td}>
-                    {new Date(order.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                    <div style={styles.timeWrapper}>
+                      <Calendar size={14} color="var(--text-muted)" />
+                      <span style={styles.timeText}>
+                        {new Date(order.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
                   </td>
+                  
+                  {/* Customer Info */}
                   <td style={styles.td}>
-                    <strong>{order.customerName}</strong>
-                    <br />
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      {order.deliveryAddress} | <strong>{order.customerPhone}</strong>
-                    </span>
+                    <div style={styles.customerCol}>
+                      <div style={styles.customerNameRow}>
+                        <User size={14} color="var(--text-muted)" />
+                        <strong>{order.customerName}</strong>
+                      </div>
+                      <div style={styles.customerMetaRow}>
+                        <span style={styles.tableBadge}>{order.deliveryAddress}</span>
+                        <span style={styles.payMethodText}>{order.customerPhone}</span>
+                      </div>
+                    </div>
                   </td>
+
+                  {/* Order Items */}
                   <td style={styles.td}>
-                    <ul style={{ padding: 0, margin: 0, fontSize: '0.9rem' }}>
+                    <ul style={styles.itemsList}>
                       {order.orderItems.map(item => (
-                        <li key={item.id}>
-                          {item.quantity}x {item.product.name}
+                        <li key={item.id} style={styles.itemLi}>
+                          <span style={styles.itemQty}>{item.quantity}x</span>
+                          <span style={styles.itemName}>{item.product.name}</span>
                           {item.toppings.length > 0 && (
-                            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                              {' '}(+ {item.toppings.map(t => t.toppingName).join(', ')})
+                            <span style={styles.itemToppings}>
+                              ({item.toppings.map(t => t.toppingName).join(', ')})
                             </span>
                           )}
                         </li>
                       ))}
                     </ul>
                   </td>
-                  <td style={styles.td}>Rp {order.totalAmount.toLocaleString('id-ID')}</td>
+
+                  {/* Total Amount */}
+                  <td style={styles.td}>
+                    <span style={styles.totalText}>Rp {order.totalAmount.toLocaleString('id-ID')}</span>
+                  </td>
+
+                  {/* Status Badge */}
                   <td style={styles.td}>
                     <span style={{
                       ...styles.badge,
-                      backgroundColor: order.status === 'PENDING' ? '#fff3e0' : '#e8f5e9',
-                      color: order.status === 'PENDING' ? '#e65100' : '#2e7d32',
+                      backgroundColor:
+                        order.status === 'PENDING' ? 'rgba(255, 149, 0, 0.08)' :
+                        order.status === 'PAID' ? 'rgba(52, 199, 89, 0.08)' :
+                        order.status === 'COMPLETED' ? 'rgba(0, 102, 204, 0.08)' :
+                        order.status === 'CANCELLED' ? 'rgba(255, 59, 48, 0.08)' : '#f5f5f7',
+                      color:
+                        order.status === 'PENDING' ? '#ff9500' :
+                        order.status === 'PAID' ? '#34c759' :
+                        order.status === 'COMPLETED' ? '#0066cc' :
+                        order.status === 'CANCELLED' ? '#ff3b30' : '#86868b',
                     }}>
-                      {order.status}
+                      {order.status === 'PENDING' ? 'Menunggu' :
+                       order.status === 'PAID' ? 'Dibayar' :
+                       order.status === 'COMPLETED' ? 'Selesai' :
+                       order.status === 'CANCELLED' ? 'Batal' : order.status}
                     </span>
                   </td>
+
+                  {/* Actions */}
                   <td style={styles.td}>
                     {order.status === 'PENDING' && (
-                      <button 
-                        onClick={() => handleUpdateStatus(order.id, 'COMPLETED')}
-                        style={styles.actionBtn}
-                      >
-                        <CheckCircle size={16} /> Selesai
-                      </button>
+                      <div style={styles.actionCol}>
+                        <button 
+                          onClick={() => handleUpdateStatus(order.id, 'COMPLETED')}
+                          style={styles.actionBtn}
+                        >
+                          <CheckCircle size={14} /> Selesai
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
@@ -132,61 +176,173 @@ const ManageOrders = () => {
 };
 
 const styles = {
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '2rem',
+  },
+  title: {
+    fontSize: '1.75rem',
+    fontWeight: '800',
+    color: '#1d1d1f',
+  },
+  emptyState: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '4rem 2rem',
+    backgroundColor: '#ffffff',
+    borderRadius: '20px',
+    border: '1px solid var(--border)',
+    boxShadow: 'var(--shadow)',
+  },
   tableWrapper: {
     overflowX: 'auto',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
+    backgroundColor: '#ffffff',
+    borderRadius: '20px',
     border: '1px solid var(--border)',
+    boxShadow: 'var(--shadow)',
   },
   table: {
     width: '100%',
     borderCollapse: 'collapse',
+    textAlign: 'left',
   },
   th: {
-    padding: '1rem',
-    textAlign: 'left',
-    backgroundColor: 'var(--bg-main)',
-    borderBottom: '2px solid var(--border)',
+    padding: '1.25rem 1.5rem',
+    backgroundColor: '#f5f6f8',
+    borderBottom: '1px solid var(--border)',
     color: 'var(--text-muted)',
-    fontWeight: '600',
+    fontWeight: '700',
+    fontSize: '0.85rem',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
   },
   tr: {
     borderBottom: '1px solid var(--border)',
+    transition: 'background-color 0.2s',
+    ':hover': {
+      backgroundColor: '#fafafa',
+    }
   },
   td: {
-    padding: '1rem',
+    padding: '1.25rem 1.5rem',
     verticalAlign: 'top',
+    fontSize: '0.9rem',
+    color: 'var(--text-main)',
+  },
+  timeWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+  },
+  timeText: {
+    fontWeight: '600',
+    color: 'var(--text-main)',
+  },
+  customerCol: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+  },
+  customerNameRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '0.95rem',
+  },
+  customerMetaRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    flexWrap: 'wrap',
+  },
+  tableBadge: {
+    backgroundColor: '#f5f5f7',
+    color: '#1d1d1f',
+    padding: '2px 8px',
+    borderRadius: '6px',
+    fontSize: '0.75rem',
+    fontWeight: '700',
+  },
+  payMethodText: {
+    fontSize: '0.75rem',
+    color: 'var(--text-muted)',
+    fontWeight: '500',
+  },
+  itemsList: {
+    padding: 0,
+    margin: 0,
+    listStyle: 'none',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  },
+  itemLi: {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: '6px',
+  },
+  itemQty: {
+    fontWeight: '800',
+    color: 'var(--primary)',
+    fontSize: '0.85rem',
+  },
+  itemName: {
+    fontWeight: '600',
+    color: 'var(--text-main)',
+  },
+  itemToppings: {
+    color: 'var(--text-muted)',
+    fontSize: '0.75rem',
+    fontStyle: 'italic',
+  },
+  totalText: {
+    fontWeight: '800',
+    fontSize: '1rem',
+    color: 'var(--text-main)',
   },
   badge: {
-    padding: '4px 8px',
-    borderRadius: '12px',
+    padding: '4px 10px',
+    borderRadius: '8px',
     fontSize: '0.75rem',
-    fontWeight: 'bold',
+    fontWeight: '800',
+    display: 'inline-block',
+  },
+  actionCol: {
+    display: 'flex',
+    gap: '6px',
   },
   actionBtn: {
     display: 'flex',
     alignItems: 'center',
-    gap: '4px',
+    gap: '6px',
     padding: '6px 12px',
-    backgroundColor: '#4caf50',
-    color: '#fff',
-    borderRadius: '4px',
-    fontWeight: '600',
-    fontSize: '0.875rem',
+    backgroundColor: '#34c759',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '8px',
+    fontWeight: '700',
+    fontSize: '0.8rem',
+    cursor: 'pointer',
+    boxShadow: '0 2px 6px rgba(52, 199, 89, 0.15)',
   },
   clearBtn: {
     display: 'flex',
     alignItems: 'center',
-    gap: '6px',
-    padding: '0.6rem 1.2rem',
-    backgroundColor: '#fff',
-    color: '#d32f2f',
-    border: '1px solid #d32f2f',
-    borderRadius: '8px',
-    fontWeight: '600',
+    gap: '8px',
+    padding: '0.65rem 1.25rem',
+    backgroundColor: '#ffffff',
+    color: 'var(--primary)',
+    border: '1px solid var(--primary)',
+    borderRadius: '12px',
+    fontWeight: '700',
     fontSize: '0.875rem',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
+    boxShadow: '0 2px 4px rgba(255, 59, 48, 0.02)',
   }
 };
 

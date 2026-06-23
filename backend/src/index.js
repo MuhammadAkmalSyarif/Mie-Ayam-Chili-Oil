@@ -57,8 +57,26 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? true // Allow all origins in production (Vercel handles it)
+    : (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl) or any localhost port
+        if (!origin || /https?:\/\/localhost:\d+/.test(origin) || /https?:\/\/127\.0\.0\.1:\d+/.test(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// Serve static uploads folder locally
+const uploadDir = path.join(__dirname, '../uploads');
+app.use('/uploads', express.static(uploadDir));
 
 // Routes
 app.use('/api/products', productRoutes);
@@ -77,7 +95,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Something went wrong!' });
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' || require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });

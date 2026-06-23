@@ -13,6 +13,7 @@ import Navbar from './components/Navbar';
 
 // Admin Pages
 import AdminLayout from './layouts/AdminLayout';
+import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import ManageOrders from './pages/admin/ManageOrders';
 import ManageProducts from './pages/admin/ManageProducts';
@@ -29,6 +30,7 @@ function App() {
               <Route path="/order-success/:orderId" element={<><Navbar /><main className="container mt-4 mb-4"><OrderSuccess /></main></>} />
 
               {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="orders" element={<ManageOrders />} />

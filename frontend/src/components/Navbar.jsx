@@ -26,12 +26,12 @@ const Navbar = () => {
 
 const styles = {
   nav: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#ffffff', // Pure white header
     position: 'sticky',
     top: 0,
     zIndex: 100,
-    boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-    overflow: 'hidden',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)', // Subtle premium shadow
+    height: '70px',
   },
   logo: {
     display: 'flex',
@@ -40,28 +40,36 @@ const styles = {
     height: '100%',
   },
   bannerImg: {
-    height: '60px',
+    height: '50px',
     objectFit: 'contain',
   },
   cartContainer: {
     position: 'relative',
-    padding: '8px',
-    color: '#fff',
-  },
-  badge: {
-    position: 'absolute',
-    top: '0',
-    right: '0',
-    backgroundColor: 'var(--primary)',
-    color: '#fff',
-    fontSize: '0.75rem',
-    fontWeight: 'bold',
+    width: '44px',
+    height: '44px',
     borderRadius: '50%',
-    width: '20px',
-    height: '20px',
+    backgroundColor: '#f5f5f7', // Cool grey circular background
+    color: '#1d1d1f', // Dark charcoal icon
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    transition: 'background-color 0.2s',
+  },
+  badge: {
+    position: 'absolute',
+    top: '-3px',
+    right: '-3px',
+    backgroundColor: 'var(--primary, #ff3b30)',
+    color: '#ffffff',
+    fontSize: '0.7rem',
+    fontWeight: '800',
+    borderRadius: '50%',
+    width: '18px',
+    height: '18px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '2px solid #ffffff', // White outline separating badge from background
   }
 };
 
